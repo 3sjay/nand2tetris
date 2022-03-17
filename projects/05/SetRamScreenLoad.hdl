@@ -1,0 +1,12 @@
+CHIP SetRamScreenLoad {
+  IN load, address[2];
+  OUT ramload, screenload;
+
+  PARTS:
+  And(a=load, b=address[0], out=ramloadtmp);
+  Xor(a=ramloadtmp, b=address[1], out=ramload);
+
+  Xor(a=address[0], b=address[1], out=tmpscreen);
+  And(a=load, b=tmpscreen, out=screenload);
+
+}

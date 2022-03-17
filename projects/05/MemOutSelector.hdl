@@ -1,0 +1,29 @@
+CHIP MemOutSelector {
+  IN a[16], b[16], c[16], sel[2];
+  OUT out[16];
+
+  PARTS:
+  // Create Not'd versions of the two MSB sel bits
+  Not(in=sel[1], out=notsel1);
+  Not(in=sel[0], out=notsel0);
+
+  // Dummy value of 0's
+  Xor16(a=a, b=a, out=zeros);
+
+
+  And16Out(a=notsel0, b=notsel1, out=s1);
+  And16Out(a=notsel1, b=sel[0], out=s2);
+  And16Out(a=notsel0, b=sel[1], out=s3);
+  And16Out(a=sel[0], b=sel[1], out=s4);
+
+  And16(a=s1, b=a, out=x1);
+  And16(a=s2, b=a, out=x2);
+  And16(a=s3, b=b, out=x3);
+  And16(a=s4, b=c, out=x4);
+
+  Or16(a=x1, b=x2, out=y1);
+  Or16(a=x3, b=x4, out=y2);
+
+  Or16(a=y1, b=y2, out=out);
+
+}

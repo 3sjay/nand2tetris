@@ -1,0 +1,10 @@
+CHIP MemSelector {
+  IN in, sel[15];
+  OUT a, b;
+
+
+
+  
+
+}
+

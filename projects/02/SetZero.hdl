@@ -1,0 +1,36 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/Adder16.hdl
+
+/**
+ * Adds two 16-bit values.
+ * The most significant carry bit is ignored.
+ */
+
+CHIP SetZero {
+    IN in[16];
+    OUT out;
+
+    PARTS:
+    // Put you code here:
+    Or(a=in[0], b=in[1], out=tmp01);
+    Or(a=in[2], b=in[3], out=tmp02);
+    Or(a=in[4], b=in[5], out=tmp03);
+    Or(a=in[6], b=in[7], out=tmp04);
+    Or(a=in[8], b=in[9], out=tmp05);
+    Or(a=in[10], b=in[11], out=tmp06);
+    Or(a=in[12], b=in[13], out=tmp07);
+    Or(a=in[14], b=in[15], out=tmp08);
+    
+    Or(a=tmp01, b=tmp02, out=x1);
+    Or(a=tmp03, b=tmp04, out=x2);
+    Or(a=tmp05, b=tmp06, out=x3);
+    Or(a=tmp07, b=tmp08, out=x4);
+
+    Or(a=x1, b=x2, out=y1);
+    Or(a=x3, b=x4, out=y2);
+
+    Or(a=y1, b=y2, out=xx);
+    Not(in=xx, out=out);
+}

@@ -1,0 +1,123 @@
+import sys
+
+if len(sys.argv) != 2:
+  print(f"Usage: {sys.argv[0]} text.asm")
+  sys.exit(1)
+
+# Clean line of spaces, tabs and comments
+def clean_line(line):
+  l = line.replace(" ", "")
+  l = line.replace("\t", "")
+  if "//" in l:
+    l = l[:l.find("/")]
+  return l
+
+with open(sys.argv[1]) as f:
+  for l in f.readlines():
+    l = l.strip()
+    l = clean_line(l)
+    if l == "":
+      continue
+
+
+    if "@" in l:
+      # label/variable or constant
+      try:
+        # if constant - we immediatly print the corresponding A-instruction
+        i = int(l.split("@")[1])
+        print(format(i, "016b"))
+        
+      except ValueError:
+        print("NOT AN INT - label/variable?")
+      except Exception as e:
+        print(e)
+    else:
+      # this is a C-instruction
+      a = 0
+      d1, d2, d3 = 0,0,0
+      j1, j2, j3 = 0,0,0
+      c1, c2, c3, c4, c5, c6 = 0,0,0,0,0,0
+
+      if "=" in l:
+        # we need to assign something
+        left, right = l.split("=")
+        #print(f"LEFT: {left} - RIGHT: {right}")
+
+        # set the dest parts
+        if "A" in left:
+          d1 = 1
+        if "D" in left:
+          d2 = 1
+        if "M" in left:
+          d3 = 1
+
+        # set the comp parts
+        if right == "0":
+          c1, c2, c3, c4, c5, c6 = 1,0,1,0,1,0
+        if right == "1":
+          c1, c2, c3, c4, c5, c6 = 1,1,1,1,1,1
+        if right == "-1":
+          c1, c2, c3, c4, c5, c6 = 1,1,1,0,1,0
+        if right == "D":
+          c1, c2, c3, c4, c5, c6 = 0,0,1,1,0,0
+        if right == "A" or right == "M":
+          c1, c2, c3, c4, c5, c6 = 1,1,0,0,0,0
+        if right == "!D":
+          c1, c2, c3, c4, c5, c6 = 0,0,1,1,0,1
+        if right == "!A" or right == "!M":
+          c1, c2, c3, c4, c5, c6 = 1,1,0,0,0,1
+        if right == "-D":
+          c1, c2, c3, c4, c5, c6 = 0,0,1,1,1,1
+        if right == "-A" or right == "-M":
+          c1, c2, c3, c4, c5, c6 = 1,1,0,0,1,1
+        if right == "D+1":
+          c1, c2, c3, c4, c5, c6 = 0,1,1,1,1,1
+        if right == "A+1" or right == "M+1":
+          c1, c2, c3, c4, c5, c6 = 1,1,0,1,1,1
+        if right == "D-1":
+          c1, c2, c3, c4, c5, c6 = 0,0,1,1,1,0
+        if right == "A-1" or right == "M-1":
+          c1, c2, c3, c4, c5, c6 = 1,1,0,0,1,0
+        if right == "D+A" or right == "D+M":
+          c1, c2, c3, c4, c5, c6 = 0,0,0,0,1,0
+        if right == "D-A" or right == "D-M":
+          c1, c2, c3, c4, c5, c6 = 0,1,0,0,1,1
+        if right == "A-D" or right == "M-D":
+          c1, c2, c3, c4, c5, c6 = 0,0,0,1,1,1
+        if right == "D&A" or right == "D&M":
+          c1, c2, c3, c4, c5, c6 = 0,0,0,0,0,0
+        if right == "D|A" or right == "D|M":
+          c1, c2, c3, c4, c5, c6 = 0,1,0,1,0,1
+          
+        if "M" in right:
+          a = 1
+
+
+
+
+      elif ";" in l:
+        # we will jmp ... maybe
+        left, right = l.split(";")
+        # set the jump parts
+        if "JGT" in right:
+          j3 = 1
+        if "JEQ" in right:
+          j2 = 1
+        if "JGE" in right:
+          j2, j3 = 1,1
+        if "JLT" in right:
+          j1 = 1
+        if "JNE" in right:
+          j1, j3 = 1,1
+        if "JLE" in right:
+          j1, j2 = 1,1
+        if "JMP" in right:
+          j1, j2, j3 = 1,1,1
+
+      else:
+        print(f"whatz this: {l}")
+
+
+      print(f"111{a}{c1}{c2}{c3}{c4}{c5}{c6}{d1}{d2}{d3}{j1}{j2}{j3}")
+
+

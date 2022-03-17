@@ -1,0 +1,106 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/ALU.hdl
+
+/**
+ * The ALU (Arithmetic Logic Unit).
+ * Computes one of the following functions:
+ * x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y,
+ * x+1, y+1, x-1, y-1, x&y, x|y on two 16-bit inputs, 
+ * according to 6 input bits denoted zx,nx,zy,ny,f,no.
+ * In addition, the ALU computes two 1-bit outputs:
+ * if the ALU output == 0, zr is set to 1; otherwise zr is set to 0;
+ * if the ALU output < 0, ng is set to 1; otherwise ng is set to 0.
+ */
+
+// Implementation: the ALU logic manipulates the x and y inputs
+// and operates on the resulting values, as follows:
+// if (zx == 1) set x = 0        // 16-bit constant
+// if (nx == 1) set x = !x       // bitwise not
+// if (zy == 1) set y = 0        // 16-bit constant
+// if (ny == 1) set y = !y       // bitwise not
+// if (f == 1)  set out = x + y  // integer 2's complement addition
+// if (f == 0)  set out = x & y  // bitwise and
+// if (no == 1) set out = !out   // bitwise not
+// if (out == 0) set zr = 1
+// if (out < 0) set ng = 1
+
+
+// Current Testcase to pass:
+// Expected:
+// |        x         |        y         |zx |nx |zy |ny | f |no |       out        |zr |ng |
+// | 0000000000000000 | 1111111111111111 | 1 | 1 | 1 | 1 | 1 | 1 | 0000000000000001 | 0 | 0 |
+// Got:
+// |        x         |        y         |zx |nx |zy |ny | f |no |       out        |zr |ng |
+// | 0000000000000000 | 1111111111111111 | 1 | 1 | 1 | 1 | 1 | 1 | 0000000000000000 | 1 | 0 |
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute out = x + y (if 1) or x & y (if 0)
+        no; // negate the out output?
+
+    OUT 
+        out[16], // 16-bit output
+        zr, // 1 if (out == 0), 0 otherwise
+        ng; // 1 if (out < 0),  0 otherwise
+
+    PARTS:
+    // Put you code here:
+    // generate a 16-bit 0 array => xxorx == yxory
+    Xor16(a=x, b=x, out=xxorx);
+
+    // take care of the zx bit
+    Mux16(a=x, b=xxorx, sel=zx, out=outzx);
+
+    // Generate the Not'd version of outzx
+    Not16(in=outzx, out=notoutzx);
+
+    // take care of the nx bit
+    Mux16(a=outzx, b=notoutzx, sel=nx, out=outnx);
+
+
+
+    // we just use xxorx 
+    // Xor16(a=y, b=y, out=yxory);
+
+    // take care of the zy bit (again xxorx == yxory)
+    Mux16(a=y, b=xxorx, sel=zy, out=outzy);
+
+    // Generate the Not'd version of outzx
+    Not16(in=outzy, out=notoutzy);
+    
+    // take care of the ny bit
+    Mux16(a=outzy, b=notoutzy, sel=ny, out=outny);
+
+
+
+    // Feed outnx and outny to `Add` and `And`
+    And16(a=outnx, b=outny, out=outand);
+    Add16(a=outnx, b=outny, out=outadd);
+
+    // Take care of the f bit
+    Mux16(a=outand, b=outadd, sel=f, out=outf);
+
+    // Generate the Not'd version of outf
+    Not16(in=outf, out=notoutf);
+
+    // Take care of the no bit
+    Mux16(a=outf, b=notoutf, sel=no, out=tmpout);
+
+    // Setting ng, if the MSB is 1 => out<0
+    SetNg(in=tmpout, out=ng);
+
+    // Setting zr
+    SetZero(in=tmpout, out=zr);
+
+    // Return tmpout unchanged
+    Or16(a=tmpout, b=tmpout, out=out);
+    
+
+}

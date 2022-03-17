@@ -1,0 +1,83 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux16.hdl
+
+/**
+ * 16-bit multiplexor: 
+ * for i = 0..15 out[i] = a[i] if sel == 0 
+ *                        b[i] if sel == 1
+ */
+
+CHIP Mux16 {
+    IN a[16], b[16], sel;
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+    Not(in=sel, out=notsel);
+
+    And(a=a[0], b=notsel, out=tmp0);
+    And(a=sel, b=b[0], out=tmp40);
+    Or(a=tmp0, b=tmp40, out=out[0]);
+
+    And(a=a[1], b=notsel, out=tmp1);
+    And(a=sel, b=b[1], out=tmp41);
+    Or(a=tmp1, b=tmp41, out=out[1]);
+
+    And(a=a[2], b=notsel, out=tmp2);
+    And(a=sel, b=b[2], out=tmp42);
+    Or(a=tmp2, b=tmp42, out=out[2]);
+
+    And(a=a[3], b=notsel, out=tmp3);
+    And(a=sel, b=b[3], out=tmp43);
+    Or(a=tmp3, b=tmp43, out=out[3]);
+
+    And(a=a[4], b=notsel, out=tmp4);
+    And(a=sel, b=b[4], out=tmp44);
+    Or(a=tmp4, b=tmp44, out=out[4]);
+
+    And(a=a[5], b=notsel, out=tmp5);
+    And(a=sel, b=b[5], out=tmp45);
+    Or(a=tmp5, b=tmp45, out=out[5]);
+
+    And(a=a[6], b=notsel, out=tmp6);
+    And(a=sel, b=b[6], out=tmp46);
+    Or(a=tmp6, b=tmp46, out=out[6]);
+
+    And(a=a[7], b=notsel, out=tmp7);
+    And(a=sel, b=b[7], out=tmp47);
+    Or(a=tmp7, b=tmp47, out=out[7]);
+
+    And(a=a[8], b=notsel, out=tmp8);
+    And(a=sel, b=b[8], out=tmp48);
+    Or(a=tmp8, b=tmp48, out=out[8]);
+
+    And(a=a[9], b=notsel, out=tmp9);
+    And(a=sel, b=b[9], out=tmp49);
+    Or(a=tmp9, b=tmp49, out=out[9]);
+
+    And(a=a[10], b=notsel, out=tmp10);
+    And(a=sel, b=b[10], out=tmp50);
+    Or(a=tmp10, b=tmp50, out=out[10]);
+
+    And(a=a[11], b=notsel, out=tmp11);
+    And(a=sel, b=b[11], out=tmp51);
+    Or(a=tmp11, b=tmp51, out=out[11]);
+
+    And(a=a[12], b=notsel, out=tmp12);
+    And(a=sel, b=b[12], out=tmp52);
+    Or(a=tmp12, b=tmp52, out=out[12]);
+
+    And(a=a[13], b=notsel, out=tmp13);
+    And(a=sel, b=b[13], out=tmp53);
+    Or(a=tmp13, b=tmp53, out=out[13]);
+
+    And(a=a[14], b=notsel, out=tmp14);
+    And(a=sel, b=b[14], out=tmp54);
+    Or(a=tmp14, b=tmp54, out=out[14]);
+
+    And(a=a[15], b=notsel, out=tmp15);
+    And(a=sel, b=b[15], out=tmp55);
+    Or(a=tmp15, b=tmp55, out=out[15]);
+}
